@@ -1,169 +1,164 @@
-# [PYTORCH] Hierarchical Attention Networks for Document Classification
-![图片1](https://user-images.githubusercontent.com/40982544/71545397-84b56d00-29c5-11ea-94d1-eb3d7bb143bb.png)
-## Introduction
+# Profile
 
-Here is my pytorch implementation of the model described in the paper **Hierarchical Attention Networks for Document Classification** [paper](https://www.cs.cmu.edu/%7Ediyiy/docs/naacl16.pdf). 
+Hierarchical Attention Networks for Document Classification
 
-<p align="center">
-  <img src="demo/video.gif"><br/>
-  <i>An example of app demo for my model's output for Dbpedia dataset.</i>
-</p>
+## Datasets
 
-<p align="center">
-  <img src="demo/output.gif"><br/>
-  <i>An example of my model's performance for Dbpedia dataset.</i>
-</p>
+I use AG's News. Here are statistics of datasets I used for experiments . These datasets could be download from [link](https://drive.google.com/drive/u/0/folders/0Bz8a_Dbh9Qhbfll6bVpmNUtUcFdjYmF2SEpmZUZUcVNiMUw1TWN6RDV3a0JHT3kxLVhVR2M)
 
-## How to use my code
+| Dataset   | Classes | Train samples | Test samples |
+| --------- | ------- | ------------- | ------------ |
+| AG’s News | 4       | 120 000       | 7 600        |
 
-With my code, you can:
-* **Train your model with any dataset**
-* **Given either my trained model or yours, you could evaluate any test dataset whose have the same set of classes**
-* **Run a simple web app for testing purpose**
+| Classes  | Train samples |
+| -------- | ------------- |
+| World    | 30000         |
+| Sports   | 30000         |
+| Business | 30000         |
+| Sci/Tech | 30000         |
 
-## Requirements:
+I also use [yelp](http://www.yelp.com/dataset_challenge).
 
-* **python 3.6**
-* **pytorch 0.4**
-* **tensorboard**
-* **tensorboardX** (This library could be skipped if you do not use SummaryWriter)
-* **numpy**
+| Dataset      | Classes | Train samples | Test samples |
+| ------------ | ------- | ------------- | ------------ |
+| Yelp reviews | 2       | 560 000       | 38 000       |
 
-## Datasets:
+| Classes  | Train samples |
+| -------- | ------------- |
+| Positive | 280000        |
+| Negative | 280000        |
 
-Statistics of datasets I used for experiments. These datasets could be download from [link](https://drive.google.com/drive/u/0/folders/0Bz8a_Dbh9Qhbfll6bVpmNUtUcFdjYmF2SEpmZUZUcVNiMUw1TWN6RDV3a0JHT3kxLVhVR2M)
+## Initialization for embedding layer
 
-| Dataset                | Classes | Train samples | Test samples |
-|------------------------|:---------:|:---------------:|:--------------:|
-| AG’s News              |    4    |    120 000    |     7 600    |
-| Sogou News             |    5    |    450 000    |    60 000    |
-| DBPedia                |    14   |    560 000    |    70 000    |
-| Yelp Review Polarity   |    2    |    560 000    |    38 000    |
-| Yelp Review Full       |    5    |    650 000    |    50 000    |
-| Yahoo! Answers         |    10   |   1 400 000   |    60 000    |
-| Amazon Review Full     |    5    |   3 000 000   |    650 000   |
-| Amazon Review Polarity |    2    |   3 600 000   |    400 000   |
+In my implementation, **Pytorch** is used to reappear HAN, and most of the HAN repo used a default embedding layer,so I try to load pre-trained work2vec model to enhance the score of the result, which is taken from GLOVE (you could download from [link](https://nlp.stanford.edu/projects/glove/)).
 
-Additionally, I also use word2vec pre-trained models, taken from GLOVE, which you could download from [link](https://nlp.stanford.edu/projects/glove/). I run experiments with all 4 word2vec files (50d, 100d, 200d and 300d). You could easily switch to other common word2vec models, like the one provided in FastText [link](https://fasttext.cc/docs/en/crawl-vectors.html) 
-In the paper, it is said that a pre-trained word2vec is used. However, to the best of my knowledge, at least in pytorch, there is no implementation on github using it. In all HAN github repositories I have seen so far, a default embedding layer
-was used, without loading pre-trained word2vec model. I admit that we could still train HAN model without any pre-trained word2vec model. However, to serve the purpose of re-implementing origin model, in all experiments, as mentioned above, I used 1 out of 4 pre-trained word2vec models as initilization for embedding layer.
+I run experiments with all 4 word2vec files (50d, 100d, 200d and 300d)(d for demension of the work2vec) in AG's News. The 4 embedding methods do almost same good to the classification of AG’s News, which refer to 96%,97%,98%,98% on test set.
 
-## Setting:
 
-During my experiments, I found out that given different datasets and different embedding layer's dimension, some combinations of batch size and learning rate yield better performance (faster convergence and higher accuracy) than others. Particularly in some cases, if you set wrong values for these 2 very important parameters, your model will never converge. Detail setting for each experiments will be shown in **Experiments** part.
-I have not set a fixed number of epoches for each experiment. Instead, I apply early stopping technique, to stop training phase after test loss has not been improved for **n** epoches. 
 
-## Training
+# Training and Result
 
-If you want to train a model with default parameters, you could run:
-- **python train.py**
+We debug our model on local pycharm and train our model on UAI Train(use terminal because easy to handle conda environment).
 
-If you want to train a model with your preference parameters, like optimizer and learning rate, you could run:
-- **python train.py --batch_size batch_size --lr learning_rate**: For example, python train.py --batch_size 512 --lr 0.01
+The method to attach my code is to visit https://github.com/1012598167/Hierarchical-attention-networks-pytorch (I can't upload big files like models and datasets, so please visit by Ucloud), or if you are the manager of UAI train, you can visit train,test and flask template for app,app design ,our model and so on on the road below. 
 
-If you want to train a model with your preference word2vec model, you could run:
-- **python train.py --word2vec_path path/to/your/word2vec**
+(environment: python 3.6.9,conda 4.8.0,pytorch 1.1.0
 
-## Test
+run: python train/text.py)
 
-For testing a trained model with your test file, please run the following command:
-- **python test.py --word2vec_path path/to/your/word2vec**, with the word2vec file is the same as the one you use in training phase.
+![image-20200112213947833](README.assets/image-20200112213947833.png)
 
-You could find some trained models I have trained in [link](https://drive.google.com/open?id=1A50PDQMm0THnU6QDxOEsvKqH-ZTxmGpT)
+![image-20200112213934445](README.assets/image-20200112213934445.png)
 
-## Experiments:
+![image-20200112213211360](README.assets/image-20200112213211360.png)
 
-Results for test set are presented as follows:  A(B/C):
-- **A** is accuracy.
-- **B** is learning rate used.
-- **C** is batch size.
+The final accuracy on test set is 96%.
 
-Each experiment is run over 10 epochs.
+![image-20200112221909544](README.assets/image-20200112221909544.png)
 
-| GLOVE word2vec|        50      |      100     |      200     |      300     |
-|:---------------:|:------------------:|:------------------:|:------------------:|:------------------:|
-|    ag_news    |   updated soon   |   updated soon   |   updated soon   |   updated soon   |
-|   sogu_news   |   updated soon   |   updated soon   |   updated soon   |   updated soon   |
-|    db_pedia   |   updated soon   |   updated soon   |   updated soon   |   updated soon   |
-| yelp_polarity |   updated soon   |   updated soon   |   updated soon   |   updated soon   |
-|  yelp_review  |   updated soon   |   updated soon   |   updated soon   |   updated soon   |
-|  yahoo_answer |   updated soon   |   updated soon   |   updated soon   |   updated soon   |
-| amazon_review |   updated soon   |   updated soon   |   updated soon   |   updated soon   |
-|amazon_polarity|   updated soon   |   updated soon   |   updated soon   |   updated soon   |
+The model is in "cloud computing\Hierarchical-attention-networks-pytorch\trained_models\whole_model_han".
 
-The training/test loss/accuracy curves for each dataset's experiments (with the order from left to right, top to bottom is 50d, 100d, 200d and 300d word2vec) are shown below:
+It does no good to introduce the basic concept of the model, you can read it on https://www.cs.cmu.edu/~./hovy/papers/16HLT-hierarchical-attention-networks.pdf.
 
-- **ag_news**
+You can download the app demo to try to get your result on your data. See releases on https://github.com/1012598167/Hierarchical-attention-networks-pytorch/releases.
 
-<img src="demo/agnews_50.png" width="420"> <img src="demo/agnews_100.png" width="420"> 
-<img src="demo/agnews_200.png" width="420"> <img src="demo/agnews_300.png" width="420">
+# Detach the payload
 
-- **db_pedia**
+I can't arrange my model successfully on UAI Inference because of "Cannot load user model".
 
-<img src="demo/dbpedia_50.png" width="420"> <img src="demo/dbpedia_100.png" width="420"> 
-<img src="demo/dbpedia_200.png" width="420"> <img src="demo/dbpedia_300.png" width="420">
+![image-20200112215647135](README.assets/image-20200112215647135.png)
 
-- **yelp_polarity**
+So I arrange it on my Aliyun lightweight application server and my friends' for detaching payload. 
 
-<img src="demo/yelpreviewpolarity_50.png" width="420"> <img src="demo/yelpreviewpolarity_100.png" width="420"> 
-<img src="demo/yelpreviewpolarity_200.png" width="420"> <img src="demo/empty.png" width="420">
 
-- **yelp_review**
 
-<img src="demo/yelpreviewfull_50.png" width="420"> <img src="demo/empty.png" width="420"> 
-<img src="demo/empty.png" width="420"> <img src="demo/yelpreviewfull_300.png" width="420">
+47.101.151.73->detach paylaod
 
-- **Yahoo! Answers**
+![image-20200112220314761](README.assets/image-20200112220314761.png)
 
-<img src="demo/yahoo_50.png" width="420"> <img src="demo/yahoo_100.png" width="420"> 
-<img src="demo/yahoo_200.png" width="420"> <img src="demo/yahoo_300.png" width="420">
+It will be useful when we visit the doname or ip, it 301 jumps to the default location of flask.
 
-- **amazon_review**
+47.101.151.73 →https://47.101.151.73:5000/api
 
-<img src="demo/amazonreviewfull_50.png" width="420"> <img src="demo/empty.png" width="420"> 
-<img src="demo/amazonreviewfull_200.png" width="420"> <img src="demo/empty.png" width="420">
+![image-20200112220414429](README.assets/image-20200112220414429.png)
 
-- **amazon_polarity**
 
-<img src="demo/amazonreviewpolarity_50.png" width="420"> <img src="demo/amazonreviewpolarity_100.png" width="420"> 
-<img src="demo/empty.png" width="420"> <img src="demo/amazonreviewpolarity_50.png" width="420">
 
-There are some experiments I have not had time to train. For such experiments, statistics as well as loss/accuracy visualization are empty. Additionally, there are some other experiments, I can not wait until they are finished, hence I stopped training phase before it should be . You could see whether a model was stopped by early stopping technique or by me by looking at the test loss curve, if the loss is not improved for 5 consecutive epoches, it is the former case. Othewise, if the loss is still going down, it is the latter case. When I have time, I will complete the incomplete experiments, and update results here.
+We use a domain to mask our ip for safety.
 
-After completing training phase, you could see model's parameters you have set, accuracy, loss and confusion matrix for test set at the end of each epoch at **root_folder/trained_models/logs.txt**. One example is shown below:
+noname.asia → 47.101.151.73
 
-<p align="center">
-  <img src="demo/output.png"><br/>
-  <i>An example of logs.txt for Dbpedia dataset.</i>
-</p>
+![image-20200112220652693](README.assets/image-20200112220652693.png)
 
-## Demo:
 
-I wrote a simple web which is suitable for quick test with any input text. In order to use the app, you could follow the following steps:
 
-- **Step 1**: Run the script app.py
-<img src="demo/1.png" width="800">
+We use postman to debug our interface on model.
 
-- **Step 2**: Web interface
-<img src="demo/2.png" width="800">
+![image-20200112220736355](README.assets/image-20200112220736355.png)
 
-- **Step 3**: Select trained model
-<img src="demo/3.png" width="800">
+# App demo
 
-- **Step 4**: Select word2vec model
-<img src="demo/4.png" width="800">
+We upload our model on the server, and app gets the model result by http request to flask.
 
-- **Step 5 (Optional)**: Select file containing classes (one class per line)
-<img src="demo/5.png" width="800">
+![image-20200112220120788](README.assets/image-20200112220120788.png)
 
-- **Step 6**: After all necessary files are selected, press submit button
-<img src="demo/6.png" width="800">
+We use android studio to make our app.
 
-- **Step 7**: You could paste any text to the textbox
-<img src="demo/7.png" width="800">
+###### Workflow
 
-- **Step 8**: A sample text
-<img src="demo/8.png" width="800">
+1. create a simulator
+2. build UI controls (word and picture)
 
-- **Step 9**: After submit button pressed, predicted category and probability are shown
-<img src="demo/9.png" width="800">
+3. realize click  button
+4. Front: Nested Layout——A linear frame is nested within a constrained frame.
+
+(For realization, we call sdk, and use Retrofit2 to realize network communication.)
+
+![image-20200112222802562](README.assets/image-20200112222802562.png)
+
+###### Guide
+
+1. Download app on my github https://github.com/1012598167/Hierarchical-attention-networks-pytorch/releases
+2. open the app
+3. Input your text (by enter message or choose file)
+4. Click button to submit
+5. Get the result of the classification prediction
+
+# Innovation Point
+
+We use 4 embedding layer to compare which layer is better.
+
+We use reverse proxy NGINX to detach the payload.
+
+We register a domain for further design, which currently helps hide ip to protect ip privacy and do convenient to connect app.
+
+We design an app demo for user to easily apply our model.
+
+# Pity
+
+As for Yelp, I met cuda runtime error and when we try to use Tensorflow, multiple threads will go failure. So I guess Yelp is so huge for the engine to handle.
+
+![image-20200112211938075](README.assets/image-20200112211938075.png)
+
+![image-20200112212120159](README.assets/image-20200112212120159.png)
+
+I'm not familiar with the visualization method “attentionmap” on pytorch, but on Tensorflow I can make it done. Unfortunately, I can't go through correctly on Tensorflow.
+
+For app design, I will add some dynamic effects further.
+
+
+
+# Resource
+
+Program github link : https://github.com/1012598167/Hierarchical-attention-networks-pytorch
+
+In cloud computing.zip:
+
+README.md for readme
+
+model in Hierarchical-attention-networks-pytorch\trained_models
+
+AndroidProjects.zip for Android
+
+the other for model
+
